@@ -5,7 +5,7 @@ const KEY = 'demo-manager-v1';
 const sources = import.meta.glob('./data/imported.json', { eager: true, import: 'default' });
 const imported = Object.values(sources)[0] as Pick<State, 'demos' | 'absences' | 'importInfo'> | undefined;
 export function initialState(): State {
-  return { version: 1, demos: imported?.demos ?? [], absences: imported?.absences ?? [], importInfo: imported?.importInfo, settings: { denominator: 'worked', quarters: {} } };
+  return { version: 1, demos: imported?.demos ?? [], absences: imported?.absences ?? [], importInfo: imported?.importInfo, settings: { quarters: {} } };
 }
 export function loadState(): { state: State; error: string } {
   try {
