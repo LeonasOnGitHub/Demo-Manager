@@ -11,7 +11,7 @@ npm install
 npm run dev
 ```
 
-Die im Terminal angezeigte lokale Adresse im Browser öffnen. `npm run build` erstellt die geprüfte Produktionsversion in `dist/`. `npm run preview` zeigt diesen Build lokal an. `npm test` prüft die Berechnungslogik.
+Die im Terminal angezeigte lokale Adresse im Browser öffnen. `npm run build` erstellt die geprüfte Produktionsversion in `dist/`. `npm run preview` zeigt diesen Build lokal an. `npm test` prüft die Berechnungslogik. `npm run test:ui` prüft Erfassen, Bearbeiten und Speichern der Abwesenheiten in einer isolierten DOM-Testumgebung.
 
 ## Regeln
 
