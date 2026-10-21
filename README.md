@@ -17,10 +17,12 @@ Die im Terminal angezeigte lokale Adresse im Browser öffnen. `npm run build` er
 
 - Ziel: 30 angerechnete Demos pro Quartal. Bonusgrenze: mindestens 21.
 - Nur explizit als durchgeführt bestätigte Demos zählen. Vereinbarte Demos zählen ausschließlich zur separat gekennzeichneten Prognose. Abgesagte und ungeprüfte Demos zählen nicht.
-- Gutschrift = Abwesenheitstage des ausgewählten Quartals × (Summe tatsächlich durchgeführter Demos der zwei direkt vorhergehenden Quartale / Summe der relevanten Tage beider Quartale).
-- Voreinstellung: Montag bis Freitag abzüglich manuell gepflegter Feiertage und Urlaubs-/Krankheitstage. Alternativ sind alle Arbeitstage inklusive Abwesenheiten als Nenner wählbar.
-- Beide historischen Quartale müssen als vollständig bestätigt sein. Bei fehlender Grundlage bleibt die Gutschrift offen. Bestätigte Nullwerte sind gültig. Historische Gesamtzahlen können fehlende Daten ergänzen und ersetzen ausschließlich die Zählung für den Tagesdurchschnitt.
-- Es gibt keine rekursive Anrechnung: Frühere Gutschriften erhöhen die historischen Demo-Zahlen nicht. Berechnungen und Schwellenwerte verwenden ungerundete Werte; die Anzeige rundet auf zwei Dezimalstellen.
+- Gutschrift = Abwesenheitstage des ausgewählten Quartals × ((durchgeführte + bereits gutgeschriebene Demos der zwei direkt vorhergehenden Quartale) / 130,2).
+- Die Basis ist fest: 21,7 Arbeitstage pro Monat × 6 Monate = 130,2 Tage. Urlaub, Krankheit und Feiertage werden nicht von diesem Nenner abgezogen.
+- Beispiel des Nutzers: 33 durchgeführte + 8 gutgeschriebene Demos = 41; 41 / 130,2 = 0,3149001536… Demos je Abwesenheitstag, dargestellt rund 0,315. Das Beispiel ist keine Behauptung über die importierten Ist-Daten.
+- Beide historischen Quartale müssen als vollständig bestätigt sein. Bei fehlender Grundlage bleibt die Gutschrift offen. Bestätigte Nullwerte sind gültig. Historische Gesamtzahlen ergänzen fehlende Daten und ersetzen ausschließlich die Zählung für den historischen Tagesdurchschnitt.
+- Frühere Gutschriften fließen in den Durchschnitt ein. Ohne manuellen historischen Startwert werden sie automatisch aus ihren eigenen Vorquartalen berechnet. Für die ersten Quartale können bereits erhaltene Gutschriften eingetragen werden; dadurch ist keine endlose Vorgeschichte erforderlich. Fehlende Startwerte bleiben erkennbar offen.
+- Berechnungen und Schwellenwerte verwenden ungerundete Werte. Die Anzeige rundet Demo-Summen auf zwei und den Tagessatz auf sechs Dezimalstellen.
 - Abwesenheiten werden als Quartalssummen in halben Tagen gepflegt. Überschneidungen müssen beim Erfassen vermieden werden. Ein Eintrag über Quartalsgrenzen ist auf die betreffenden Quartale aufzuteilen.
 - Datum und Quartal werden automatisch gekoppelt. Ohne Datum ist ein vereinbarter Termin möglich, eine durchgeführte Demo benötigt ein Datum bis einschließlich heute (Europe/Berlin).
 
