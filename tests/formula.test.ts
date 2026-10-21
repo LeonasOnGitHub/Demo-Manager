@@ -27,7 +27,8 @@ test('user example: 33 actual plus 8 credited demos divided by fixed 130.2 days'
   assert.equal(DAYS_PER_TWO_QUARTERS, 130.2);
   assert.equal(m.rate, 41 / 130.2);
   assert.equal(m.rate!.toFixed(3), '0.315');
-  assert.equal(m.credit, (41 / 130.2) * 8);
+  assert.equal(m.theoreticalCredit, (41 / 130.2) * 8);
+  assert.equal(m.credit, 3);
   assert.equal(baseline(s, '2026-Q1').total, 23);
   assert.equal(baseline(s, '2026-Q2').total, 18);
   s.absences[0].days = 30;
@@ -45,16 +46,16 @@ test('confirmed zero demos and zero credits are valid', () => {
   for (const c of Object.values(s.settings.quarters)) { c.historicalDemos = 0; c.historicalCredit = 0; }
   assert.equal(metrics(s, '2026-Q3').credit, 0);
 });
-test('earlier credits roll into the next two-quarter average without intermediate rounding', () => {
+test('rounded quarterly credits roll into the next two-quarter average', () => {
   const s = withHistory();
   s.settings.quarters['2026-Q3'] = { confirmed: true, historicalDemos: 20, historicalCredit: null };
   s.absences.push({ id: 'q4', quarter: '2026-Q4', days: 3.5, kind: 'sick', note: '' });
-  const q3Credit = 41 / 130.2 * 8;
+  const q3Credit = 3;
   const q4Rate = (18 + 20 + q3Credit) / 130.2;
   assert.equal(baseline(s, '2026-Q3').credit, q3Credit);
   assert.equal(metrics(s, '2026-Q4').rate, q4Rate);
-  assert.equal(metrics(s, '2026-Q4').credit, q4Rate * 3.5);
-  assert.notEqual(q3Credit, 0.315 * 8);
+  assert.equal(metrics(s, '2026-Q4').theoreticalCredit, q4Rate * 3.5);
+  assert.equal(metrics(s, '2026-Q4').credit, 1);
 });
 test('missing starting credit blocks the dependent chain, explicit zero starts it', () => {
   const s = withHistory();
@@ -69,7 +70,7 @@ test('only completed demos count; plans affect forecast only', () => {
   const m = metrics(s, '2026-Q3');
   assert.equal(m.total, 1); assert.equal(m.forecast, 2); assert.equal(m.review, 1);
 });
-test('bonus and target thresholds use unrounded values', () => {
+test('bonus and target thresholds include rounded credit', () => {
   const s = state();
   s.demos = Array.from({ length: 21 }, (_, i) => demo(String(i)));
   assert.equal(metrics(s, '2026-Q3').bonusReached, true);
@@ -83,7 +84,35 @@ test('bonus and target thresholds use unrounded values', () => {
   fractional.settings.quarters['2026-Q1'] = { confirmed: true, historicalDemos: 130, historicalCredit: 0 };
   fractional.settings.quarters['2026-Q2'] = { confirmed: true, historicalDemos: 0, historicalCredit: 0 };
   assert.equal(metrics(fractional, '2026-Q3').total.toFixed(2), '21.00');
-  assert.equal(metrics(fractional, '2026-Q3').bonusReached, false);
+  assert.equal(metrics(fractional, '2026-Q3').bonusReached, true);
+  fractional.demos = Array.from({ length: 29 }, (_, i) => demo(String(i)));
+  assert.equal(metrics(fractional, '2026-Q3').targetReached, true);
+});
+test('quarter credit rounds down below half and up from half, including 2.52', () => {
+  for (const [theoretical, credited] of [[0, 0], [0.49, 0], [0.5, 1], [2.49, 2], [2.5, 3], [2.52, 3]]) {
+    const s = withHistory();
+    // A combined total of 651 gives an exact rate of 5 demos per day.
+    s.settings.quarters['2026-Q1'] = { confirmed: true, historicalDemos: 651, historicalCredit: 0 };
+    s.settings.quarters['2026-Q2'] = { confirmed: true, historicalDemos: 0, historicalCredit: 0 };
+    s.absences[2].days = theoretical / 5;
+    assert.equal(metrics(s, '2026-Q3').credit, credited, String(theoretical));
+    s.settings.quarters['2026-Q3'] = { confirmed: true, historicalDemos: 0, historicalCredit: null };
+    assert.equal(baseline(s, '2026-Q3').credit, credited, String(theoretical));
+  }
+});
+test('absence entries are summed before rounding, independent of their split or kind', () => {
+  const s = withHistory();
+  s.absences = [{ id: 'one', quarter: '2026-Q3', days: 1, kind: 'sick', note: '' }, { id: 'two', quarter: '2026-Q3', days: 1, kind: 'vacation', note: '' }];
+  assert.equal(metrics(s, '2026-Q3').credit, 1);
+  s.absences = [{ id: 'both', quarter: '2026-Q3', days: 2, kind: 'combined', note: '' }];
+  assert.equal(metrics(s, '2026-Q3').credit, 1);
+});
+test('legacy fractional historical credits remain loadable and count as whole demos', () => {
+  const s = withHistory();
+  s.settings.quarters['2026-Q1'].historicalCredit = 2.52;
+  assert.equal(validateState(s), true);
+  assert.equal(baseline(s, '2026-Q1').credit, 3);
+  assert.equal(metrics(s, '2026-Q3').rate, (19 + 3 + 14 + 4) / 130.2);
 });
 test('unresolved imports block history unless a confirmed historic total replaces them', () => {
   const s = withHistory();

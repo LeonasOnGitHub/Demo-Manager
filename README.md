@@ -22,7 +22,8 @@ Die im Terminal angezeigte lokale Adresse im Browser öffnen. `npm run build` er
 - Beispiel des Nutzers: 33 durchgeführte + 8 gutgeschriebene Demos = 41; 41 / 130,2 = 0,3149001536… Demos je Abwesenheitstag, dargestellt rund 0,315. Das Beispiel ist keine Behauptung über die importierten Ist-Daten.
 - Beide historischen Quartale müssen als vollständig bestätigt sein. Bei fehlender Grundlage bleibt die Gutschrift offen. Bestätigte Nullwerte sind gültig. Historische Gesamtzahlen ergänzen fehlende Daten und ersetzen ausschließlich die Zählung für den historischen Tagesdurchschnitt.
 - Frühere Gutschriften fließen in den Durchschnitt ein. Ohne manuellen historischen Startwert werden sie automatisch aus ihren eigenen Vorquartalen berechnet. Für die ersten Quartale können bereits erhaltene Gutschriften eingetragen werden; dadurch ist keine endlose Vorgeschichte erforderlich. Fehlende Startwerte bleiben erkennbar offen.
-- Berechnungen und Schwellenwerte verwenden ungerundete Werte. Die Anzeige rundet Demo-Summen auf zwei und den Tagessatz auf sechs Dezimalstellen.
+- Die gesamte Abwesenheitsgutschrift wird einmal pro Quartal kaufmännisch auf ganze Demos gerundet: 2,49 → 2; 2,50 → 3; 2,52 → 3. Der Tagessatz bleibt für die Berechnung ungerundet. Einzelne Abwesenheitseinträge werden vor dem Runden zusammengezählt.
+- Der Quartalsstand, die Bonusgrenze und die Basis späterer Quartale verwenden die gerundeten Gutschriften. Auch ältere gespeicherte historische Gutschriften mit Nachkommastellen werden bei der Berechnung auf ganze Demos gerundet.
 - Abwesenheiten werden als Quartalssummen in halben Tagen gepflegt. Überschneidungen müssen beim Erfassen vermieden werden. Ein Eintrag über Quartalsgrenzen ist auf die betreffenden Quartale aufzuteilen.
 - Datum und Quartal werden automatisch gekoppelt. Ohne Datum ist ein vereinbarter Termin möglich, eine durchgeführte Demo benötigt ein Datum bis einschließlich heute (Europe/Berlin).
 

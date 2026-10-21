@@ -48,10 +48,10 @@ export function baseline(state: State, q: string, memo = new Map<string, Baselin
   const absence = state.absences.filter(a => a.quarter === q).reduce((sum, a) => sum + a.days, 0);
   const count = config.historicalDemos ?? demos.filter(d => d.status === 'completed').length;
   const confirmed = config.confirmed && (config.historicalDemos !== null || !demos.some(d => d.status === 'review'));
-  let credit = config.historicalCredit ?? (absence === 0 ? 0 : null);
+  let credit = config.historicalCredit == null ? (absence === 0 ? 0 : null) : Math.round(config.historicalCredit);
   if (credit === null && confirmed) {
     const prior = [baseline(state, shiftQuarter(q, -2), memo), baseline(state, shiftQuarter(q, -1), memo)];
-    if (prior.every(p => p.ready)) credit = prior.reduce((sum, p) => sum + p.total!, 0) / DAYS_PER_TWO_QUARTERS * absence;
+    if (prior.every(p => p.ready)) credit = Math.round(prior.reduce((sum, p) => sum + p.total!, 0) / DAYS_PER_TWO_QUARTERS * absence);
   }
   const result = { quarter: q, count, absence, credit, total: credit === null ? null : count + credit, ready: confirmed && credit !== null, config };
   memo.set(q, result);
@@ -66,9 +66,11 @@ export function metrics(state: State, q: string) {
   const memo = new Map<string, Baseline>();
   const previous = [baseline(state, shiftQuarter(q, -2), memo), baseline(state, shiftQuarter(q, -1), memo)];
   const rate = previous.every(p => p.ready) ? previous.reduce((s, p) => s + p.total!, 0) / DAYS_PER_TWO_QUARTERS : null;
-  const credit = absenceDays === 0 ? 0 : rate === null ? null : absenceDays * rate;
+  const theoreticalCredit = absenceDays === 0 ? 0 : rate === null ? null : absenceDays * rate;
+  // Round the combined quarterly credit once, not each absence or the daily rate.
+  const credit = theoreticalCredit === null ? null : Math.round(theoreticalCredit);
   const total = completed + (credit ?? 0);
-  return { completed, planned, review, absenceDays, previous, rate, credit, total, forecast: total + planned, bonusReached: total >= MINIMUM, targetReached: total >= TARGET };
+  return { completed, planned, review, absenceDays, previous, rate, theoreticalCredit, credit, total, forecast: total + planned, bonusReached: total >= MINIMUM, targetReached: total >= TARGET };
 }
 export const isDate = (v: unknown): v is string => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) && !Number.isNaN(Date.parse(v)) && new Date(`${v}T12:00:00Z`).toISOString().slice(0, 10) === v;
 export const isQuarter = (v: unknown): v is string => typeof v === 'string' && /^(19|20|21)\d{2}-Q[1-4]$/.test(v);
