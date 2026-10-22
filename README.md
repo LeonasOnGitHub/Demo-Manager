@@ -13,6 +13,29 @@ npm run dev
 
 Die im Terminal angezeigte lokale Adresse im Browser öffnen. `npm run build` erstellt die geprüfte Produktionsversion in `dist/`. `npm run preview` zeigt diesen Build lokal an. `npm test` prüft die Berechnungslogik. `npm run test:ui` prüft Erfassen, Bearbeiten und Speichern der Abwesenheiten in einer isolierten DOM-Testumgebung.
 
+## Desktop-Start unter Windows
+
+Der Demo-Manager kann in einem eigenen Google-Chrome-Fenster ohne Adressleiste
+gestartet werden. Einmalig einen Build und die Desktop-Verknüpfung erstellen:
+
+```powershell
+npm run build
+./scripts/install-desktop-shortcut.ps1
+```
+
+Anschließend auf dem Desktop **Demo-Manager** doppelklicken. Der Starter nutzt
+`http://127.0.0.1:5173` und startet bei Bedarf einen lokalen Hintergrunddienst.
+Ein bereits dort laufender Demo-Manager wird weiterverwendet. Node.js und Google
+Chrome müssen installiert bleiben; auch der Projektordner wird weiterhin benötigt.
+Nach Änderungen am Programm `npm run build` erneut ausführen.
+
+Die Daten bleiben im Local Storage des verwendeten Chrome-Profils. Daten aus
+anderen Browsern, Profilen oder lokalen Adressen können über ein JSON-Backup in
+den Einstellungen übertragen werden. Bei mehreren Chrome-Profilen das bisher
+verwendete Profil nutzen. Der Hintergrunddienst läuft nach Schließen des Fensters
+bis zum Abmelden oder Neustarten weiter; er ist nur auf diesem Rechner erreichbar.
+Zum Entfernen des Desktop-Starts genügt es, die Verknüpfung zu löschen.
+
 ## Regeln
 
 - Ziel: 30 angerechnete Demos pro Quartal. Bonusgrenze: mindestens 21.
